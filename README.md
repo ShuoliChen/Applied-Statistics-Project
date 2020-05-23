@@ -13,13 +13,23 @@ NYSE_GARCH.r: garch model built for ARMA's heteroscedastic residue
 R version 3.6.0 (2019-04-26)
 
 TSA, version:	1.2
+
 forecast, version: 8.12
+
 tseries, version: 1.3.21
+
 zoo, version: 1.8-7
+
 FinTS, version:	0.3-3
+
 ggplot2, version:	3.2.1
+
 timeDate, version:	3043.102
+
 timeSeries, version: 3062.100
+
 fGarch，version: 3042.83.2
+
 parallel，version: 33.6.0
+
 rugarch，version: 1.4-2
