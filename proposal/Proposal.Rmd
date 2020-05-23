@@ -1,0 +1,137 @@
+---
+title: "Applied-Statistics-Project Proposal"
+author: "ShuoliChen"
+date: "2020/5/22"
+output: html_document
+---
+
+Data Description {#data_description}
+----------------
+
+Here we have a data set which is the daily closing price of the New York
+stock exchange(NYSE). It includes the data of NYSE from February 7, 1984
+to July 16, 2012. Closing price is the final price at which it trades
+during regular market hours on any given day. It is considered the most
+accurate valuation of a stock or other security until trading resumes on
+the next trading day.
+
+EDA & Research topic {#eda_research_topic}
+--------------------
+
+First we plot the data with timing diagram:
+
+![][1]
+
+The basic information of the data is:
+
+    > stat.desc(NYSE)
+                            x
+    nbr.val      6.625000e+03
+    nbr.null     0.000000e+00
+    nbr.na       0.000000e+00
+    min          4.442000e+01
+    max          1.316946e+03
+    range        1.272526e+03
+    sum          2.748025e+06
+    median       2.653700e+02
+    mean         4.147963e+02
+    SE.mean      4.523171e+00
+    CI.mean.0.95 8.866873e+00
+    var          1.355414e+05
+    std.dev      3.681595e+02
+    coef.var     8.875669e-01
+
+According to the plot, we prefer that the data is not stationary and is
+not white noise. We deal it with experiment：
+
+$\mathbf{1}$.Make the data stationary with curve-fittin. We use
+$e^{a_0+a_1x+a_2x^2}$ to fit the data, and get the coefficients:
+
+    > fit <- lm(log(NYSE) ~ x+I(x^2))
+    > fit
+    Call:
+    lm(formula = log(NYSE) ~ x + I(x^2))
+    Coefficients:
+    (Intercept)            x       I(x^2)
+      3.482e+00    6.837e-04   -1.793e-08
+
+Now we check if the transformed data is stationary:
+
+    > adf.test(NYSE11)
+    Augmented Dickey-Fuller Test
+    data:  NYSE11
+    Dickey-Fuller = -2.1416, Lag order = 18, p-value = 0.5184
+    alternative hypothesis: stationary
+
+We can see that the data became stationary.
+
+Plot the stationary timing diagram:
+
+![][2]
+
+$\mathbf{2}$.White noise test. We conduct Ljung-Box white noise test
+to the transformed data:
+
+    > Box.test(NYSE11, type="Ljung-Box")
+        Box-Ljung test
+    data:  NYSE11
+    X-squared = 6603, df = 1, p-value < 2.2e-16
+
+We can see that the transformed data is not white noise. So it deserves
+further exploring. Obviously, this is a heteroscedastic data, our aim is
+to find a proper time series model for this data with its
+heteroscedasticity captured.
+
+Why heteroscedasticity so serious? In statistics, a collection of random
+variables is heteroscedastic if there are sub-populations that have
+different variabilities from others. Here \"variability\" could be
+quantified by the variance or any other measure of statistical
+dispersion. The existence of heteroscedasticity is a major concern in
+the application of regression analysis. Essentially, wherever there is
+heteroskedasticity, observations do not conform to a linear pattern.
+Instead, they tend to cluster. Therefore, if statistical models that
+assume constant variance are used on this data, then the conclusions and
+predictive value one can draw from the model will not be reliable.
+
+![][3]
+
+To do {#to_do}
+-----
+
+We try to find the pattern of the closing price of NYSE all these years
+to seize the rule of economic trend of New York, the tool we try to use
+is time series. The difficulty of the project is that the data is stable
+at the first part, but fluctuates drastically at the second part. To
+capture this feature of the data, a suitable model strategy would be
+necessary.
+
+Generalized AutoRegressive Conditional Heteroskedasticity (GARCH) is a
+statistical model used in analyzing time-series data where the variance
+error is believed to be serially autocorrelated. GARCH models assume
+that the variance of the error term follows an autoregressive moving
+average process. It is a statistical modeling technique used to help
+predict the volatility of returns on financial assets.
+
+\\begin{aligned} &y\_{t}=x\_{t}\^{\\prime} b+\\epsilon\_{t}\\\\
+&\\epsilon\_{t} \| \\psi\_{t-1} \\sim \\mathcal{N}\\left(0,
+\\sigma\_{t}\^{2}\\right)\\\\ &\\sigma\_{t}\^{2}=\\omega+\\alpha\_{1}
+\\epsilon\_{t-1}\^{2}+\\cdots+\\alpha\_{q}
+\\epsilon\_{t-q}\^{2}+\\beta\_{1}
+\\sigma\_{t-1}\^{2}+\\cdots+\\beta\_{p}
+\\sigma\_{t-p}\^{2}=\\omega+\\sum\_{i=1}\^{q} \\alpha\_{i}
+\\epsilon\_{t-i}\^{2}+\\sum\_{i=1}\^{p} \\beta\_{i} \\sigma\_{t-i}\^{2}
+\\end{aligned}
+
+Many variations of GARCH have emerged. These include Nonlinear (NGARCH),
+which addresses correlation and observed \"volatility clustering\" of
+returns, and Integrated GARCH (IGARCH), which restricts the volatility
+parameter. All the GARCH model variations seek to incorporate the
+direction, positive or negative, of returns in addition to the magnitude
+(addressed in the original model). Each derivation of GARCH can be used
+to accommodate the specific qualities of the stock, industry, or
+economic data. Our goal is to find the most suitable model for this
+specific NYSE data.
+
+  [1]: NYSE.png "NYSE.png" {width="300"}
+  [2]: NYSE11.png "NYSE11.png" {width="300"}
+  [3]: heter.png "heter.png" {width="800"}
